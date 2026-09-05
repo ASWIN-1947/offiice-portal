@@ -11,7 +11,7 @@ let employees = [];
 
 async function loadEmployees() {
 
-    // First check localStorage
+    // Check localStorage first
     const savedEmployees = localStorage.getItem("employees");
 
     if (savedEmployees) {
@@ -20,7 +20,7 @@ async function loadEmployees() {
 
     } else {
 
-        // If localStorage is empty, load from JSON
+        // If no saved data, load from employees.json
         try {
 
             const response = await fetch("employees.json");
@@ -36,6 +36,7 @@ async function loadEmployees() {
         } catch (error) {
 
             console.error(error);
+
             alert("Unable to load employee data.");
 
         }
@@ -44,7 +45,7 @@ async function loadEmployees() {
 
 
 // ==========================================
-// SAVE EMPLOYEES TO LOCAL STORAGE
+// SAVE EMPLOYEES
 // ==========================================
 
 function saveEmployees() {
@@ -68,6 +69,7 @@ if (loginForm) {
 
         event.preventDefault();
 
+
         const username =
             document.getElementById("username").value.trim();
 
@@ -78,31 +80,45 @@ if (loginForm) {
             document.getElementById("message");
 
 
+        // ==========================================
         // ADMIN LOGIN
+        // ==========================================
+
         if (username === "admin" && password === "admin123") {
 
             localStorage.setItem("role", "admin");
+
+            localStorage.removeItem("employeeId");
 
             window.location.href = "admin.html";
 
             return;
         }
+
+
+        // ==========================================
         // MANAGER LOGIN
-if (username === "manager" && password === "manager123") {
+        // ==========================================
 
-    localStorage.setItem("role", "manager");
+        if (username === "manager" && password === "manager123") {
 
-    window.location.href = "manager.html";
+            localStorage.setItem("role", "manager");
 
-    return;
-}
+            localStorage.removeItem("employeeId");
+
+            window.location.href = "manager.html";
+
+            return;
+        }
 
 
-        // LOAD EMPLOYEES
+        // ==========================================
+        // EMPLOYEE LOGIN
+        // ==========================================
+
         await loadEmployees();
 
 
-        // EMPLOYEE LOGIN
         const employee = employees.find(function(emp) {
 
             return emp.id === username &&
@@ -122,12 +138,16 @@ if (username === "manager" && password === "manager123") {
 
             window.location.href = "employee.html";
 
-        } else {
-
-            message.textContent =
-                "Invalid username or password.";
-
+            return;
         }
+
+
+        // ==========================================
+        // INVALID LOGIN
+        // ==========================================
+
+        message.textContent =
+            "Invalid username or password.";
 
     });
 }
@@ -141,27 +161,29 @@ if (window.location.pathname.includes("employee.html")) {
 
     loadEmployees().then(function() {
 
-        const role = localStorage.getItem("role");
+        const role =
+            localStorage.getItem("role");
 
         const employeeId =
             localStorage.getItem("employeeId");
 
 
-        // Check login
+        // Check employee login
         if (role !== "employee" || !employeeId) {
 
-            window.location.href = "login.html";
+            window.location.href = "index.html";
 
             return;
         }
 
 
         // Find employee
-        const employee = employees.find(function(emp) {
+        const employee =
+            employees.find(function(emp) {
 
-            return emp.id === employeeId;
+                return emp.id === employeeId;
 
-        });
+            });
 
 
         if (!employee) {
@@ -174,12 +196,18 @@ if (window.location.pathname.includes("employee.html")) {
         }
 
 
-        // Display employee information
+        // ==========================================
+        // DISPLAY EMPLOYEE INFORMATION
+        // ==========================================
+
         document.getElementById("employeeName").textContent =
             employee.name;
 
         document.getElementById("employeeDesignation").textContent =
             employee.designation;
+
+        document.getElementById("profileInitial").textContent =
+            employee.name.charAt(0).toUpperCase();
 
         document.getElementById("employeeId").textContent =
             employee.id;
@@ -196,11 +224,6 @@ if (window.location.pathname.includes("employee.html")) {
         document.getElementById("email").textContent =
             employee.email;
 
-
-        // Profile initial
-        document.getElementById("profileInitial").textContent =
-            employee.name.charAt(0).toUpperCase();
-
     });
 }
 
@@ -213,13 +236,14 @@ if (window.location.pathname.includes("admin.html")) {
 
     loadEmployees().then(function() {
 
-        const role = localStorage.getItem("role");
+        const role =
+            localStorage.getItem("role");
 
 
-        // Only admin can enter
+        // Only admin can access
         if (role !== "admin") {
 
-            window.location.href = "login.html";
+            window.location.href = "index.html";
 
             return;
         }
@@ -232,7 +256,7 @@ if (window.location.pathname.includes("admin.html")) {
 
 
 // ==========================================
-// DISPLAY EMPLOYEES
+// DISPLAY EMPLOYEES FOR ADMIN
 // ==========================================
 
 function displayEmployees() {
@@ -249,7 +273,8 @@ function displayEmployees() {
 
     employees.forEach(function(employee, index) {
 
-        const row = document.createElement("tr");
+        const row =
+            document.createElement("tr");
 
 
         row.innerHTML = `
@@ -260,88 +285,115 @@ function displayEmployees() {
 
 
             <!-- NAME -->
+
             <td>
 
                 <div id="name-${index}">
                     ${employee.name}
                 </div>
 
-                <div id="name-edit-${index}" class="edit-area">
+                <div
+                    id="name-edit-${index}"
+                    class="edit-area">
                 </div>
 
             </td>
 
 
             <!-- DEPARTMENT -->
+
             <td>
 
                 <div id="department-${index}">
                     ${employee.department}
                 </div>
 
-                <div id="department-edit-${index}" class="edit-area">
+                <div
+                    id="department-edit-${index}"
+                    class="edit-area">
                 </div>
 
             </td>
 
 
             <!-- DESIGNATION -->
+
             <td>
 
                 <div id="designation-${index}">
                     ${employee.designation}
                 </div>
 
-                <div id="designation-edit-${index}" class="edit-area">
+                <div
+                    id="designation-edit-${index}"
+                    class="edit-area">
                 </div>
 
             </td>
 
 
             <!-- EMAIL -->
+
             <td>
 
                 <div id="email-${index}">
                     ${employee.email}
                 </div>
 
-                <div id="email-edit-${index}" class="edit-area">
+                <div
+                    id="email-edit-${index}"
+                    class="edit-area">
                 </div>
 
             </td>
 
 
             <!-- ACTIONS -->
+
             <td>
 
                 <button
                     class="edit-btn"
                     onclick="editField(${index}, 'name')">
+
                     Edit Name
+
                 </button>
+
 
                 <button
                     class="edit-btn"
                     onclick="editField(${index}, 'department')">
+
                     Edit Department
+
                 </button>
+
 
                 <button
                     class="edit-btn"
                     onclick="editField(${index}, 'designation')">
+
                     Edit Designation
+
                 </button>
+
 
                 <button
                     class="edit-btn"
                     onclick="editField(${index}, 'email')">
+
                     Edit Email
+
                 </button>
+
 
                 <button
                     class="delete-btn"
                     onclick="deleteEmployee(${index})">
+
                     Delete
+
                 </button>
 
             </td>
@@ -357,12 +409,13 @@ function displayEmployees() {
 
 
 // ==========================================
-// EDIT ONLY ONE FIELD
+// EDIT ONE FIELD
 // ==========================================
 
 function editField(index, field) {
 
-    const value = employees[index][field];
+    const value =
+        employees[index][field];
 
 
     const display =
@@ -377,17 +430,19 @@ function editField(index, field) {
         );
 
 
-    // Prevent multiple editing
+    // Prevent multiple edit boxes
     if (editArea.innerHTML !== "") {
+
         return;
+
     }
 
 
-    // Hide original value
+    // Hide current value
     display.style.display = "none";
 
 
-    // Create input
+    // Create input box
     editArea.innerHTML = `
 
         <input
@@ -399,13 +454,18 @@ function editField(index, field) {
         <button
             class="save-btn"
             onclick="saveField(${index}, '${field}')">
+
             Save
+
         </button>
+
 
         <button
             class="cancel-btn"
             onclick="cancelEdit(${index}, '${field}')">
+
             Cancel
+
         </button>
 
     `;
@@ -425,10 +485,11 @@ function saveField(index, field) {
         );
 
 
-    const newValue = input.value.trim();
+    const newValue =
+        input.value.trim();
 
 
-    // Don't allow empty values
+    // Don't allow empty value
     if (newValue === "") {
 
         alert("This field cannot be empty.");
@@ -437,11 +498,12 @@ function saveField(index, field) {
     }
 
 
-    // Update only selected field
-    employees[index][field] = newValue;
+    // Update ONLY selected field
+    employees[index][field] =
+        newValue;
 
 
-    // Save to localStorage
+    // Save updated data
     saveEmployees();
 
 
@@ -450,7 +512,9 @@ function saveField(index, field) {
 
 
     alert(
-        `${field.charAt(0).toUpperCase() + field.slice(1)} updated successfully!`
+        field.charAt(0).toUpperCase() +
+        field.slice(1) +
+        " updated successfully!"
     );
 
 }
@@ -526,7 +590,7 @@ function addEmployee() {
     if (!email) return;
 
 
-    // Create employee
+    // Create new employee
     const newEmployee = {
 
         id: id,
@@ -580,12 +644,15 @@ function deleteEmployee(index) {
     if (!confirmation) return;
 
 
+    // Delete employee
     employees.splice(index, 1);
 
 
+    // Save
     saveEmployees();
 
 
+    // Refresh
     displayEmployees();
 
 
@@ -595,21 +662,6 @@ function deleteEmployee(index) {
 
 
 // ==========================================
-// LOGOUT
-// ==========================================
-
-function logout() {
-
-    localStorage.removeItem("role");
-
-    localStorage.removeItem("employeeId");
-
-
-    window.location.href = "index.html";
-
-}
-
-// ==========================================
 // MANAGER PAGE
 // ==========================================
 
@@ -617,10 +669,11 @@ if (window.location.pathname.includes("manager.html")) {
 
     loadEmployees().then(function() {
 
-        const role = localStorage.getItem("role");
+        const role =
+            localStorage.getItem("role");
 
 
-        // Only manager can access this page
+        // Only manager can access
         if (role !== "manager") {
 
             window.location.href = "index.html";
@@ -632,7 +685,6 @@ if (window.location.pathname.includes("manager.html")) {
         displayManagerEmployees();
 
     });
-
 }
 
 
@@ -643,7 +695,9 @@ if (window.location.pathname.includes("manager.html")) {
 function displayManagerEmployees() {
 
     const table =
-        document.getElementById("managerEmployeeTable");
+        document.getElementById(
+            "managerEmployeeTable"
+        );
 
 
     if (!table) return;
@@ -686,5 +740,22 @@ function displayManagerEmployees() {
         table.appendChild(row);
 
     });
+
+}
+
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+function logout() {
+
+    localStorage.removeItem("role");
+
+    localStorage.removeItem("employeeId");
+
+
+    window.location.href =
+        "index.html";
 
 }
