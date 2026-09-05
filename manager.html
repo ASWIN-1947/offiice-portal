@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manager Portal</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <h2>ABC Office</h2>
+
+        <div>
+            <span>Role: Manager</span>
+
+            <button onclick="logout()">
+                Logout
+            </button>
+        </div>
+
+    </nav>
+
+
+    <!-- MANAGER CONTENT -->
+    <div class="admin-container">
+
+        <div class="admin-header">
+
+            <div>
+                <h1>Employee Details</h1>
+
+                <p>
+                    View all employees and their information
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- EMPLOYEE TABLE -->
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Email</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="managerEmployeeTable">
+
+                    <!-- JavaScript will add employees here -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

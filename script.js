@@ -87,6 +87,15 @@ if (loginForm) {
 
             return;
         }
+        // MANAGER LOGIN
+if (username === "manager" && password === "manager123") {
+
+    localStorage.setItem("role", "manager");
+
+    window.location.href = "manager.html";
+
+    return;
+}
 
 
         // LOAD EMPLOYEES
@@ -597,5 +606,85 @@ function logout() {
 
 
     window.location.href = "index.html";
+
+}
+
+// ==========================================
+// MANAGER PAGE
+// ==========================================
+
+if (window.location.pathname.includes("manager.html")) {
+
+    loadEmployees().then(function() {
+
+        const role = localStorage.getItem("role");
+
+
+        // Only manager can access this page
+        if (role !== "manager") {
+
+            window.location.href = "index.html";
+
+            return;
+        }
+
+
+        displayManagerEmployees();
+
+    });
+
+}
+
+
+// ==========================================
+// DISPLAY EMPLOYEES FOR MANAGER
+// ==========================================
+
+function displayManagerEmployees() {
+
+    const table =
+        document.getElementById("managerEmployeeTable");
+
+
+    if (!table) return;
+
+
+    table.innerHTML = "";
+
+
+    employees.forEach(function(employee) {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${employee.id}
+            </td>
+
+            <td>
+                ${employee.name}
+            </td>
+
+            <td>
+                ${employee.department}
+            </td>
+
+            <td>
+                ${employee.designation}
+            </td>
+
+            <td>
+                ${employee.email}
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
 
 }
