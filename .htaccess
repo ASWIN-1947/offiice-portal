@@ -1,0 +1,15 @@
+RewriteEngine On
+
+# Prevent browser from serving cached response on direct navigation
+<IfModule mod_headers.c>
+    <FilesMatch "\.json$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# Block direct browser address bar access (Sec-Fetch-Dest: document or missing/external Referer)
+RewriteCond %{HTTP:Sec-Fetch-Dest} ^document$ [NC,OR]
+RewriteCond %{HTTP_HOST}@@%{HTTP_REFERER} !^([^@]+)@@https?://\1/ [NC]
+RewriteRule \.json$ - [F,NC,L]

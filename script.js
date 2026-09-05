@@ -1,51 +1,163 @@
 // ==========================================
-// EMPLOYEE DATA
+// OFFICE PORTAL - SCRIPT.JS
 // ==========================================
 
+// Employee data
 let employees = [];
 
+// Login users (Admin + Manager)
+let users = [];
+
 
 // ==========================================
-// LOAD EMPLOYEES
+// LOAD DATA FROM employees.json
 // ==========================================
 
-async function loadEmployees() {
+async function loadData() {
 
-    // Check localStorage first
-    const savedEmployees = localStorage.getItem("employees");
+    try {
 
-    if (savedEmployees) {
+        // Always load JSON so Admin and Manager
+        // credentials come from employees.json
+        const response = await fetch("employees.json");
 
-        employees = JSON.parse(savedEmployees);
+        if (!response.ok) {
+            throw new Error("Could not load employees.json");
+        }
 
-    } else {
+        const data = await response.json();
 
-        // If no saved data, load from employees.json
-        try {
+        // ------------------------------
+        // NEW JSON STRUCTURE
+        // ------------------------------
 
-            const response = await fetch("employees.json");
+        if (!Array.isArray(data)) {
 
-            if (!response.ok) {
-                throw new Error("Could not load employees.json");
+            users = Array.isArray(data.users)
+                ? data.users
+                : [];
+
+            const jsonEmployees = Array.isArray(data.employees)
+                ? data.employees
+                : [];
+
+            // Check if Admin has already edited employee data
+            // and saved it in localStorage
+            const savedEmployees =
+                localStorage.getItem("employees");
+
+            if (savedEmployees) {
+
+                try {
+
+                    const parsedEmployees =
+                        JSON.parse(savedEmployees);
+
+                    if (Array.isArray(parsedEmployees)) {
+                        employees = parsedEmployees;
+                    } else {
+                        employees = jsonEmployees;
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Invalid localStorage employee data:",
+                        error
+                    );
+
+                    employees = jsonEmployees;
+                }
+
+            } else {
+
+                employees = jsonEmployees;
+
+                // Save initial employee data
+                // so Admin changes can persist
+                saveEmployees();
             }
 
-            employees = await response.json();
+            return;
+        }
+
+
+        // ==========================================
+        // OLD ARRAY FORMAT SUPPORT
+        // ==========================================
+        // This prevents the website from breaking
+        // if the old JSON format is still present.
+
+        users = data.filter(function(item) {
+
+            return item.username &&
+                   item.password &&
+                   item.role;
+
+        });
+
+
+        const jsonEmployees =
+            data.filter(function(item) {
+
+                return item.id &&
+                       item.name;
+
+            });
+
+
+        const savedEmployees =
+            localStorage.getItem("employees");
+
+
+        if (savedEmployees) {
+
+            try {
+
+                const parsedEmployees =
+                    JSON.parse(savedEmployees);
+
+                if (Array.isArray(parsedEmployees)) {
+
+                    employees = parsedEmployees;
+
+                } else {
+
+                    employees = jsonEmployees;
+
+                }
+
+            } catch (error) {
+
+                employees = jsonEmployees;
+
+            }
+
+        } else {
+
+            employees = jsonEmployees;
 
             saveEmployees();
 
-        } catch (error) {
-
-            console.error(error);
-
-            alert("Unable to load employee data.");
-
         }
+
+    } catch (error) {
+
+        console.error(
+            "Error loading employees.json:",
+            error
+        );
+
+        alert(
+            "Unable to load employee data. Please check employees.json."
+        );
+
     }
 }
 
 
 // ==========================================
-// SAVE EMPLOYEES
+// SAVE EMPLOYEES TO LOCAL STORAGE
 // ==========================================
 
 function saveEmployees() {
@@ -54,6 +166,7 @@ function saveEmployees() {
         "employees",
         JSON.stringify(employees)
     );
+
 }
 
 
@@ -61,95 +174,159 @@ function saveEmployees() {
 // LOGIN
 // ==========================================
 
-const loginForm = document.getElementById("loginForm");
+const loginForm =
+    document.getElementById("loginForm");
+
 
 if (loginForm) {
 
-    loginForm.addEventListener("submit", async function(event) {
+    loginForm.addEventListener(
+        "submit",
+        async function(event) {
 
-        event.preventDefault();
-
-
-        const username =
-            document.getElementById("username").value.trim();
-
-        const password =
-            document.getElementById("password").value.trim();
-
-        const message =
-            document.getElementById("message");
+            event.preventDefault();
 
 
-        // ==========================================
-        // ADMIN LOGIN
-        // ==========================================
+            const username =
+                document.getElementById(
+                    "username"
+                ).value.trim();
 
-        if (username === "admin" && password === "admin123") {
 
-            localStorage.setItem("role", "admin");
+            const password =
+                document.getElementById(
+                    "password"
+                ).value.trim();
 
-            localStorage.removeItem("employeeId");
 
-            window.location.href = "admin.html";
+            const message =
+                document.getElementById(
+                    "message"
+                );
 
-            return;
+
+            // Clear old message
+            if (message) {
+                message.textContent = "";
+            }
+
+
+            // ==========================================
+            // LOAD JSON
+            // ==========================================
+
+            await loadData();
+
+
+            // ==========================================
+            // ADMIN / MANAGER LOGIN
+            // ==========================================
+
+            const user =
+                users.find(function(account) {
+
+                    return (
+                        account.username === username &&
+                        account.password === password
+                    );
+
+                });
+
+
+            if (user) {
+
+                // Save role
+                localStorage.setItem(
+                    "role",
+                    user.role
+                );
+
+
+                // Remove old employee login
+                localStorage.removeItem(
+                    "employeeId"
+                );
+
+
+                // ------------------------------
+                // ADMIN
+                // ------------------------------
+
+                if (user.role === "admin") {
+
+                    window.location.href =
+                        "admin.html";
+
+                    return;
+                }
+
+
+                // ------------------------------
+                // MANAGER
+                // ------------------------------
+
+                if (user.role === "manager") {
+
+                    window.location.href =
+                        "manager.html";
+
+                    return;
+                }
+
+            }
+
+
+            // ==========================================
+            // EMPLOYEE LOGIN
+            // ==========================================
+
+            const employee =
+                employees.find(function(emp) {
+
+                    return (
+                        emp.id === username &&
+                        emp.password === password
+                    );
+
+                });
+
+
+            if (employee) {
+
+                localStorage.setItem(
+                    "role",
+                    "employee"
+                );
+
+
+                localStorage.setItem(
+                    "employeeId",
+                    employee.id
+                );
+
+
+                window.location.href =
+                    "employee.html";
+
+
+                return;
+            }
+
+
+            // ==========================================
+            // INVALID LOGIN
+            // ==========================================
+
+            if (message) {
+
+                message.textContent =
+                    "Invalid username or password.";
+
+            }
+
         }
+    );
 
-
-        // ==========================================
-        // MANAGER LOGIN
-        // ==========================================
-
-        if (username === "manager" && password === "manager123") {
-
-            localStorage.setItem("role", "manager");
-
-            localStorage.removeItem("employeeId");
-
-            window.location.href = "manager.html";
-
-            return;
-        }
-
-
-        // ==========================================
-        // EMPLOYEE LOGIN
-        // ==========================================
-
-        await loadEmployees();
-
-
-        const employee = employees.find(function(emp) {
-
-            return emp.id === username &&
-                   emp.password === password;
-
-        });
-
-
-        if (employee) {
-
-            localStorage.setItem("role", "employee");
-
-            localStorage.setItem(
-                "employeeId",
-                employee.id
-            );
-
-            window.location.href = "employee.html";
-
-            return;
-        }
-
-
-        // ==========================================
-        // INVALID LOGIN
-        // ==========================================
-
-        message.textContent =
-            "Invalid username or password.";
-
-    });
 }
 
 
@@ -157,27 +334,44 @@ if (loginForm) {
 // EMPLOYEE PAGE
 // ==========================================
 
-if (window.location.pathname.includes("employee.html")) {
+if (
+    window.location.pathname.includes(
+        "employee.html"
+    )
+) {
 
-    loadEmployees().then(function() {
+    loadData().then(function() {
 
         const role =
             localStorage.getItem("role");
 
+
         const employeeId =
-            localStorage.getItem("employeeId");
+            localStorage.getItem(
+                "employeeId"
+            );
 
 
-        // Check employee login
-        if (role !== "employee" || !employeeId) {
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
 
-            window.location.href = "index.html";
+        if (
+            role !== "employee" ||
+            !employeeId
+        ) {
+
+            window.location.href =
+                "index.html";
 
             return;
         }
 
 
-        // Find employee
+        // ==========================================
+        // FIND EMPLOYEE
+        // ==========================================
+
         const employee =
             employees.find(function(emp) {
 
@@ -188,7 +382,9 @@ if (window.location.pathname.includes("employee.html")) {
 
         if (!employee) {
 
-            alert("Employee not found.");
+            alert(
+                "Employee not found."
+            );
 
             logout();
 
@@ -200,31 +396,114 @@ if (window.location.pathname.includes("employee.html")) {
         // DISPLAY EMPLOYEE INFORMATION
         // ==========================================
 
-        document.getElementById("employeeName").textContent =
-            employee.name;
+        const employeeName =
+            document.getElementById(
+                "employeeName"
+            );
 
-        document.getElementById("employeeDesignation").textContent =
-            employee.designation;
+        const employeeDesignation =
+            document.getElementById(
+                "employeeDesignation"
+            );
 
-        document.getElementById("profileInitial").textContent =
-            employee.name.charAt(0).toUpperCase();
+        const profileInitial =
+            document.getElementById(
+                "profileInitial"
+            );
 
-        document.getElementById("employeeId").textContent =
-            employee.id;
+        const employeeIdElement =
+            document.getElementById(
+                "employeeId"
+            );
 
-        document.getElementById("name").textContent =
-            employee.name;
+        const name =
+            document.getElementById(
+                "name"
+            );
 
-        document.getElementById("department").textContent =
-            employee.department;
+        const department =
+            document.getElementById(
+                "department"
+            );
 
-        document.getElementById("designation").textContent =
-            employee.designation;
+        const designation =
+            document.getElementById(
+                "designation"
+            );
 
-        document.getElementById("email").textContent =
-            employee.email;
+        const email =
+            document.getElementById(
+                "email"
+            );
+
+
+        if (employeeName) {
+
+            employeeName.textContent =
+                employee.name;
+
+        }
+
+
+        if (employeeDesignation) {
+
+            employeeDesignation.textContent =
+                employee.designation;
+
+        }
+
+
+        if (profileInitial) {
+
+            profileInitial.textContent =
+                employee.name
+                    .charAt(0)
+                    .toUpperCase();
+
+        }
+
+
+        if (employeeIdElement) {
+
+            employeeIdElement.textContent =
+                employee.id;
+
+        }
+
+
+        if (name) {
+
+            name.textContent =
+                employee.name;
+
+        }
+
+
+        if (department) {
+
+            department.textContent =
+                employee.department;
+
+        }
+
+
+        if (designation) {
+
+            designation.textContent =
+                employee.designation;
+
+        }
+
+
+        if (email) {
+
+            email.textContent =
+                employee.email;
+
+        }
 
     });
+
 }
 
 
@@ -232,18 +511,25 @@ if (window.location.pathname.includes("employee.html")) {
 // ADMIN PAGE
 // ==========================================
 
-if (window.location.pathname.includes("admin.html")) {
+if (
+    window.location.pathname.includes(
+        "admin.html"
+    )
+) {
 
-    loadEmployees().then(function() {
+    loadData().then(function() {
 
         const role =
-            localStorage.getItem("role");
+            localStorage.getItem(
+                "role"
+            );
 
 
-        // Only admin can access
+        // Only Admin can access
         if (role !== "admin") {
 
-            window.location.href = "index.html";
+            window.location.href =
+                "index.html";
 
             return;
         }
@@ -252,6 +538,7 @@ if (window.location.pathname.includes("admin.html")) {
         displayEmployees();
 
     });
+
 }
 
 
@@ -262,148 +549,160 @@ if (window.location.pathname.includes("admin.html")) {
 function displayEmployees() {
 
     const table =
-        document.getElementById("employeeTable");
+        document.getElementById(
+            "employeeTable"
+        );
 
 
-    if (!table) return;
+    if (!table) {
+        return;
+    }
 
 
     table.innerHTML = "";
 
 
-    employees.forEach(function(employee, index) {
+    employees.forEach(
+        function(employee, index) {
 
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${employee.id}
-            </td>
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
 
-            <!-- NAME -->
+            row.innerHTML = `
 
-            <td>
-
-                <div id="name-${index}">
-                    ${employee.name}
-                </div>
-
-                <div
-                    id="name-edit-${index}"
-                    class="edit-area">
-                </div>
-
-            </td>
+                <td>
+                    ${escapeHTML(employee.id)}
+                </td>
 
 
-            <!-- DEPARTMENT -->
+                <td>
 
-            <td>
+                    <div id="name-${index}">
+                        ${escapeHTML(employee.name)}
+                    </div>
 
-                <div id="department-${index}">
-                    ${employee.department}
-                </div>
+                    <div
+                        id="name-edit-${index}"
+                        class="edit-area">
+                    </div>
 
-                <div
-                    id="department-edit-${index}"
-                    class="edit-area">
-                </div>
-
-            </td>
+                </td>
 
 
-            <!-- DESIGNATION -->
+                <td>
 
-            <td>
+                    <div id="department-${index}">
+                        ${escapeHTML(employee.department)}
+                    </div>
 
-                <div id="designation-${index}">
-                    ${employee.designation}
-                </div>
+                    <div
+                        id="department-edit-${index}"
+                        class="edit-area">
+                    </div>
 
-                <div
-                    id="designation-edit-${index}"
-                    class="edit-area">
-                </div>
-
-            </td>
+                </td>
 
 
-            <!-- EMAIL -->
+                <td>
 
-            <td>
+                    <div id="designation-${index}">
+                        ${escapeHTML(employee.designation)}
+                    </div>
 
-                <div id="email-${index}">
-                    ${employee.email}
-                </div>
+                    <div
+                        id="designation-edit-${index}"
+                        class="edit-area">
+                    </div>
 
-                <div
-                    id="email-edit-${index}"
-                    class="edit-area">
-                </div>
-
-            </td>
+                </td>
 
 
-            <!-- ACTIONS -->
+                <td>
 
-            <td>
+                    <div id="email-${index}">
+                        ${escapeHTML(employee.email)}
+                    </div>
 
-                <button
-                    class="edit-btn"
-                    onclick="editField(${index}, 'name')">
+                    <div
+                        id="email-edit-${index}"
+                        class="edit-area">
+                    </div>
 
-                    Edit Name
-
-                </button>
-
-
-                <button
-                    class="edit-btn"
-                    onclick="editField(${index}, 'department')">
-
-                    Edit Department
-
-                </button>
+                </td>
 
 
-                <button
-                    class="edit-btn"
-                    onclick="editField(${index}, 'designation')">
+                <td>
 
-                    Edit Designation
+                    <button
+                        class="edit-btn"
+                        onclick="editField(
+                            ${index},
+                            'name'
+                        )">
 
-                </button>
+                        Edit Name
 
-
-                <button
-                    class="edit-btn"
-                    onclick="editField(${index}, 'email')">
-
-                    Edit Email
-
-                </button>
+                    </button>
 
 
-                <button
-                    class="delete-btn"
-                    onclick="deleteEmployee(${index})">
+                    <button
+                        class="edit-btn"
+                        onclick="editField(
+                            ${index},
+                            'department'
+                        )">
 
-                    Delete
+                        Edit Department
 
-                </button>
-
-            </td>
-
-        `;
+                    </button>
 
 
-        table.appendChild(row);
+                    <button
+                        class="edit-btn"
+                        onclick="editField(
+                            ${index},
+                            'designation'
+                        )">
 
-    });
+                        Edit Designation
+
+                    </button>
+
+
+                    <button
+                        class="edit-btn"
+                        onclick="editField(
+                            ${index},
+                            'email'
+                        )">
+
+                        Edit Email
+
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteEmployee(
+                            ${index}
+                        )">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
 
 }
 
@@ -414,8 +713,17 @@ function displayEmployees() {
 
 function editField(index, field) {
 
+    const employee =
+        employees[index];
+
+
+    if (!employee) {
+        return;
+    }
+
+
     const value =
-        employees[index][field];
+        employee[field];
 
 
     const display =
@@ -430,30 +738,44 @@ function editField(index, field) {
         );
 
 
+    if (
+        !display ||
+        !editArea
+    ) {
+        return;
+    }
+
+
     // Prevent multiple edit boxes
-    if (editArea.innerHTML !== "") {
+    if (
+        editArea.innerHTML !== ""
+    ) {
 
         return;
-
     }
 
 
     // Hide current value
-    display.style.display = "none";
+    display.style.display =
+        "none";
 
 
-    // Create input box
+    // Create input
     editArea.innerHTML = `
 
         <input
             type="text"
             id="input-${field}-${index}"
-            value="${value}"
+            value="${escapeAttribute(value)}"
         >
+
 
         <button
             class="save-btn"
-            onclick="saveField(${index}, '${field}')">
+            onclick="saveField(
+                ${index},
+                '${field}'
+            )">
 
             Save
 
@@ -462,7 +784,10 @@ function editField(index, field) {
 
         <button
             class="cancel-btn"
-            onclick="cancelEdit(${index}, '${field}')">
+            onclick="cancelEdit(
+                ${index},
+                '${field}'
+            )">
 
             Cancel
 
@@ -474,7 +799,7 @@ function editField(index, field) {
 
 
 // ==========================================
-// SAVE ONE FIELD
+// SAVE FIELD
 // ==========================================
 
 function saveField(index, field) {
@@ -485,25 +810,32 @@ function saveField(index, field) {
         );
 
 
+    if (!input) {
+        return;
+    }
+
+
     const newValue =
         input.value.trim();
 
 
-    // Don't allow empty value
+    // Prevent empty values
     if (newValue === "") {
 
-        alert("This field cannot be empty.");
+        alert(
+            "This field cannot be empty."
+        );
 
         return;
     }
 
 
-    // Update ONLY selected field
+    // Update selected field
     employees[index][field] =
         newValue;
 
 
-    // Save updated data
+    // Save changes
     saveEmployees();
 
 
@@ -537,79 +869,151 @@ function cancelEdit(index, field) {
 
 function addEmployee() {
 
+    // ==========================================
+    // EMPLOYEE ID
+    // ==========================================
+
     const id =
-        prompt("Enter Employee ID:");
+        prompt(
+            "Enter Employee ID:"
+        );
 
-    if (!id) return;
+
+    if (!id) {
+        return;
+    }
 
 
-    // Check duplicate ID
+    const employeeId =
+        id.trim();
+
+
+    // ==========================================
+    // CHECK DUPLICATE ID
+    // ==========================================
+
     const existing =
-        employees.find(function(emp) {
+        employees.find(
+            function(emp) {
 
-            return emp.id === id;
+                return (
+                    emp.id === employeeId
+                );
 
-        });
+            }
+        );
 
 
     if (existing) {
 
-        alert("Employee ID already exists.");
+        alert(
+            "Employee ID already exists."
+        );
 
         return;
     }
 
 
+    // ==========================================
+    // PASSWORD
+    // ==========================================
+
     const password =
-        prompt("Enter Password:");
+        prompt(
+            "Enter Password:"
+        );
 
-    if (!password) return;
 
+    if (!password) {
+        return;
+    }
+
+
+    // ==========================================
+    // NAME
+    // ==========================================
 
     const name =
-        prompt("Enter Name:");
+        prompt(
+            "Enter Name:"
+        );
 
-    if (!name) return;
 
+    if (!name) {
+        return;
+    }
+
+
+    // ==========================================
+    // DEPARTMENT
+    // ==========================================
 
     const department =
-        prompt("Enter Department:");
+        prompt(
+            "Enter Department:"
+        );
 
-    if (!department) return;
 
+    if (!department) {
+        return;
+    }
+
+
+    // ==========================================
+    // DESIGNATION
+    // ==========================================
 
     const designation =
-        prompt("Enter Designation:");
+        prompt(
+            "Enter Designation:"
+        );
 
-    if (!designation) return;
 
+    if (!designation) {
+        return;
+    }
+
+
+    // ==========================================
+    // EMAIL
+    // ==========================================
 
     const email =
-        prompt("Enter Email:");
+        prompt(
+            "Enter Email:"
+        );
 
-    if (!email) return;
+
+    if (!email) {
+        return;
+    }
 
 
-    // Create new employee
+    // ==========================================
+    // CREATE EMPLOYEE
+    // ==========================================
+
     const newEmployee = {
 
-        id: id,
+        id: employeeId,
 
-        password: password,
+        password: password.trim(),
 
-        name: name,
+        name: name.trim(),
 
-        department: department,
+        department: department.trim(),
 
-        designation: designation,
+        designation: designation.trim(),
 
-        email: email
+        email: email.trim()
 
     };
 
 
     // Add employee
-    employees.push(newEmployee);
+    employees.push(
+        newEmployee
+    );
 
 
     // Save
@@ -620,7 +1024,9 @@ function addEmployee() {
     displayEmployees();
 
 
-    alert("Employee added successfully!");
+    alert(
+        "Employee added successfully!"
+    );
 
 }
 
@@ -635,28 +1041,40 @@ function deleteEmployee(index) {
         employees[index];
 
 
+    if (!employee) {
+        return;
+    }
+
+
     const confirmation =
         confirm(
             `Are you sure you want to delete ${employee.name}?`
         );
 
 
-    if (!confirmation) return;
+    if (!confirmation) {
+        return;
+    }
 
 
-    // Delete employee
-    employees.splice(index, 1);
+    // Remove employee
+    employees.splice(
+        index,
+        1
+    );
 
 
     // Save
     saveEmployees();
 
 
-    // Refresh
+    // Refresh table
     displayEmployees();
 
 
-    alert("Employee deleted successfully!");
+    alert(
+        "Employee deleted successfully!"
+    );
 
 }
 
@@ -665,18 +1083,25 @@ function deleteEmployee(index) {
 // MANAGER PAGE
 // ==========================================
 
-if (window.location.pathname.includes("manager.html")) {
+if (
+    window.location.pathname.includes(
+        "manager.html"
+    )
+) {
 
-    loadEmployees().then(function() {
+    loadData().then(function() {
 
         const role =
-            localStorage.getItem("role");
+            localStorage.getItem(
+                "role"
+            );
 
 
-        // Only manager can access
+        // Only Manager can access
         if (role !== "manager") {
 
-            window.location.href = "index.html";
+            window.location.href =
+                "index.html";
 
             return;
         }
@@ -685,6 +1110,7 @@ if (window.location.pathname.includes("manager.html")) {
         displayManagerEmployees();
 
     });
+
 }
 
 
@@ -700,46 +1126,52 @@ function displayManagerEmployees() {
         );
 
 
-    if (!table) return;
+    if (!table) {
+        return;
+    }
 
 
     table.innerHTML = "";
 
 
-    employees.forEach(function(employee) {
+    employees.forEach(
+        function(employee) {
 
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${employee.id}
-            </td>
-
-            <td>
-                ${employee.name}
-            </td>
-
-            <td>
-                ${employee.department}
-            </td>
-
-            <td>
-                ${employee.designation}
-            </td>
-
-            <td>
-                ${employee.email}
-            </td>
-
-        `;
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
 
-        table.appendChild(row);
+            row.innerHTML = `
 
-    });
+                <td>
+                    ${escapeHTML(employee.id)}
+                </td>
+
+                <td>
+                    ${escapeHTML(employee.name)}
+                </td>
+
+                <td>
+                    ${escapeHTML(employee.department)}
+                </td>
+
+                <td>
+                    ${escapeHTML(employee.designation)}
+                </td>
+
+                <td>
+                    ${escapeHTML(employee.email)}
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
 
 }
 
@@ -750,12 +1182,64 @@ function displayManagerEmployees() {
 
 function logout() {
 
-    localStorage.removeItem("role");
+    localStorage.removeItem(
+        "role"
+    );
 
-    localStorage.removeItem("employeeId");
+
+    localStorage.removeItem(
+        "employeeId"
+    );
 
 
     window.location.href =
         "index.html";
+
+}
+
+
+// ==========================================
+// SECURITY / HTML ESCAPING
+// ==========================================
+
+function escapeHTML(value) {
+
+    if (value === undefined ||
+        value === null) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ==========================================
+// ESCAPE ATTRIBUTE VALUES
+// ==========================================
+
+function escapeAttribute(value) {
+
+    if (value === undefined ||
+        value === null) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 
 }
