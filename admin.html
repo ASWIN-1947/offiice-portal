@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <h2>Office Portal</h2>
+
+        <div>
+            <span>Role: Administrator</span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+
+    <!-- ADMIN CONTENT -->
+    <div class="admin-container">
+
+        <div class="admin-header">
+            <h1>Employee Management</h1>
+
+            <button class="add-btn" onclick="addEmployee()">
+                + Add Employee
+            </button>
+        </div>
+
+
+        <!-- EMPLOYEE TABLE -->
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="employeeTable">
+                    <!-- JavaScript will insert employees here -->
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

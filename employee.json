@@ -1,0 +1,34 @@
+[
+    {
+        "id": "EMP1024",
+        "password": "1234",
+        "name": "Aswin Raj",
+        "department": "IT",
+        "designation": "Software Developer",
+        "email": "aswin@abc.com"
+    },
+    {
+        "id": "EMP1025",
+        "password": "5678",
+        "name": "Arun Kumar",
+        "department": "HR",
+        "designation": "HR Executive",
+        "email": "arun@abc.com"
+    },
+    {
+        "id": "EMP1026",
+        "password": "9876",
+        "name": "Rahul",
+        "department": "Finance",
+        "designation": "Accountant",
+        "email": "rahul@abc.com"
+    },
+    {
+        "id": "EMP1027",
+        "password": "2468",
+        "name": "Priya",
+        "department": "Marketing",
+        "designation": "Marketing Executive",
+        "email": "priya@abc.com"
+    }
+]

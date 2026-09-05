@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Portal</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            ABC Office
+        </div>
+
+        <div class="nav-right">
+
+            <span class="role">
+                Employee
+            </span>
+
+            <button onclick="logout()" class="logout-button">
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="employee-container">
+
+        <div class="page-title">
+
+            <h1>My Employee Profile</h1>
+
+            <p>
+                View your registered office information
+            </p>
+
+        </div>
+
+
+        <div class="employee-card">
+
+            <div class="profile-header">
+
+                <div class="profile-icon">
+                    <span id="profileInitial">A</span>
+                </div>
+
+                <div>
+
+                    <h2 id="employeeName">
+                        Employee Name
+                    </h2>
+
+                    <p id="employeeDesignation">
+                        Designation
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-grid">
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Employee ID
+                    </span>
+
+                    <span
+                        class="detail-value"
+                        id="employeeId"
+                    ></span>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Name
+                    </span>
+
+                    <span
+                        class="detail-value"
+                        id="name"
+                    ></span>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Department
+                    </span>
+
+                    <span
+                        class="detail-value"
+                        id="department"
+                    ></span>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Designation
+                    </span>
+
+                    <span
+                        class="detail-value"
+                        id="designation"
+                    ></span>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <span class="detail-label">
+                        Email
+                    </span>
+
+                    <span
+                        class="detail-value"
+                        id="email"
+                    ></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

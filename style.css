@@ -1,0 +1,604 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f4f6f8;
+
+    color: #1f2937;
+}
+
+
+/* =========================
+   LOGIN PAGE
+========================= */
+
+.login-page {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: #eef2f7;
+}
+
+
+.login-container {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    padding: 20px;
+}
+
+
+.login-box {
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+
+.login-box h1 {
+
+    text-align: center;
+
+    margin-bottom: 5px;
+}
+
+
+.login-subtitle {
+
+    text-align: center;
+
+    color: #6b7280;
+
+    margin-bottom: 30px;
+}
+
+
+.login-box h2 {
+
+    margin-bottom: 20px;
+}
+
+
+.input-group {
+
+    margin-bottom: 20px;
+}
+
+
+.input-group label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
+}
+
+
+.input-group input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    font-size: 15px;
+}
+
+
+.input-group input:focus {
+
+    outline: none;
+
+    border-color: #2563eb;
+}
+
+
+.login-button {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+
+.login-button:hover {
+
+    background: #1d4ed8;
+}
+
+
+.error-message {
+
+    text-align: center;
+
+    color: #dc2626;
+
+    margin-top: 15px;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+
+    height: 70px;
+
+    background: #111827;
+
+    color: white;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 0 40px;
+}
+
+
+.logo {
+
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+
+.nav-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.role {
+
+    font-size: 14px;
+
+    color: #d1d5db;
+}
+
+
+.admin-role {
+
+    color: #93c5fd;
+}
+
+
+.logout-button {
+
+    padding: 8px 15px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   PAGE TITLE
+========================= */
+
+.page-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+
+.page-title h1 {
+
+    margin-bottom: 5px;
+}
+
+
+.page-title p {
+
+    color: #6b7280;
+}
+
+
+/* =========================
+   EMPLOYEE PAGE
+========================= */
+
+.employee-container {
+
+    width: 90%;
+
+    max-width: 900px;
+
+    margin: 40px auto;
+}
+
+
+.employee-card {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+.profile-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding-bottom: 25px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    margin-bottom: 25px;
+}
+
+
+.profile-icon {
+
+    width: 65px;
+
+    height: 65px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 25px;
+
+    font-weight: bold;
+}
+
+
+.profile-header p {
+
+    color: #6b7280;
+
+    margin-top: 5px;
+}
+
+
+.details-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+
+.detail-box {
+
+    background: #f9fafb;
+
+    padding: 18px;
+
+    border-radius: 8px;
+}
+
+
+.detail-label {
+
+    display: block;
+
+    font-size: 13px;
+
+    color: #6b7280;
+
+    margin-bottom: 7px;
+}
+
+
+.detail-value {
+
+    font-weight: bold;
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   ADMIN PAGE
+========================= */
+
+.admin-container {
+
+    width: 95%;
+
+    max-width: 1400px;
+
+    margin: 40px auto;
+}
+
+
+.add-button {
+
+    padding: 11px 18px;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+
+.add-button:hover {
+
+    background: #1d4ed8;
+}
+
+
+.table-container {
+
+    background: white;
+
+    border-radius: 10px;
+
+    overflow-x: auto;
+
+    box-shadow:
+        0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+th {
+
+    background: #f3f4f6;
+
+    text-align: left;
+
+    padding: 15px;
+
+    font-size: 14px;
+}
+
+
+td {
+
+    padding: 12px 15px;
+
+    border-top: 1px solid #e5e7eb;
+
+    font-size: 14px;
+}
+
+
+td input {
+
+    width: 100%;
+
+    min-width: 130px;
+
+    padding: 8px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 5px;
+}
+
+
+td input:disabled {
+
+    border: none;
+
+    background: transparent;
+
+    color: #1f2937;
+
+    padding-left: 0;
+}
+
+
+.edit-button {
+
+    background: #f59e0b;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+
+.save-button {
+
+    background: #16a34a;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    display: none;
+}
+
+
+.delete-button {
+
+    background: #dc2626;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+
+.action-buttons {
+
+    display: flex;
+
+    gap: 6px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .navbar {
+
+        padding: 0 15px;
+    }
+
+
+    .details-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .page-title {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+
+    .employee-container,
+    .admin-container {
+
+        width: 94%;
+    }
+
+}
+
+/* ============================= */
+/* INDIVIDUAL FIELD EDITING */
+/* ============================= */
+
+.edit-area {
+    margin-top: 5px;
+}
+
+.edit-area input {
+    width: 90%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.edit-btn {
+    margin: 3px;
+    padding: 6px 9px;
+    cursor: pointer;
+}
+
+.save-btn {
+    padding: 6px 10px;
+    margin-right: 3px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    margin: 3px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
