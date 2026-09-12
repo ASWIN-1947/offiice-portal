@@ -8,6 +8,49 @@ let employees = [];
 // Login users (Admin + Manager)
 let users = [];
 
+// ==========================================
+// SESSION SECURITY
+// ==========================================
+
+const currentPage = window.location.pathname.split("/").pop();
+
+const protectedPages = [
+    "admin.html",
+    "manager.html",
+    "employee.html"
+];
+
+// Check protected pages
+if (protectedPages.includes(currentPage)) {
+
+    const role = sessionStorage.getItem("role");
+
+    if (!role) {
+        window.location.replace("index.html?expired=true");
+    }
+}
+
+// Detect browser Back / Forward
+window.addEventListener("pageshow", function (event) {
+
+    if (!protectedPages.includes(currentPage)) {
+        return;
+    }
+
+    const navigation = performance.getEntriesByType("navigation")[0];
+
+    if (
+        event.persisted ||
+        (navigation && navigation.type === "back_forward")
+    ) {
+        sessionStorage.removeItem("role");
+        sessionStorage.removeItem("employeeId");
+
+        window.location.replace("index.html?expired=true");
+    }
+
+});
+
 
 // ==========================================
 // LOAD DATA FROM employees.json
@@ -44,7 +87,7 @@ async function loadData() {
             // Check if Admin has already edited employee data
             // and saved it in localStorage
             const savedEmployees =
-                localStorage.getItem("employees");
+                sessionStorage.getItem("employees");
 
             if (savedEmployees) {
 
@@ -107,7 +150,7 @@ async function loadData() {
 
 
         const savedEmployees =
-            localStorage.getItem("employees");
+            sessionStorage.getItem("employees");
 
 
         if (savedEmployees) {
@@ -162,7 +205,7 @@ async function loadData() {
 
 function saveEmployees() {
 
-    localStorage.setItem(
+    sessionStorage.setItem(
         "employees",
         JSON.stringify(employees)
     );
@@ -173,6 +216,32 @@ function saveEmployees() {
 // ==========================================
 // LOGIN
 // ==========================================
+
+// ==========================================
+// SESSION EXPIRED MESSAGE
+// ==========================================
+
+if (window.location.pathname.endsWith("index.html") ||
+    window.location.pathname.endsWith("/")) {
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("expired") === "true") {
+
+        window.addEventListener("DOMContentLoaded", function () {
+
+            const message =
+                document.getElementById("message");
+
+            if (message) {
+                message.textContent =
+                    "Session expired. Please login again.";
+            }
+
+        });
+
+    }
+}
 
 const loginForm =
     document.getElementById("loginForm");
@@ -236,14 +305,14 @@ if (loginForm) {
             if (user) {
 
                 // Save role
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "role",
                     user.role
                 );
 
 
                 // Remove old employee login
-                localStorage.removeItem(
+                sessionStorage.removeItem(
                     "employeeId"
                 );
 
@@ -254,8 +323,7 @@ if (loginForm) {
 
                 if (user.role === "admin") {
 
-                    window.location.href =
-                        "admin.html";
+                    window.location.replace("admin.html");
 
                     return;
                 }
@@ -267,8 +335,7 @@ if (loginForm) {
 
                 if (user.role === "manager") {
 
-                    window.location.href =
-                        "manager.html";
+                    window.location.replace("manager.html");
 
                     return;
                 }
@@ -293,20 +360,19 @@ if (loginForm) {
 
             if (employee) {
 
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "role",
                     "employee"
                 );
 
 
-                localStorage.setItem(
+                sessionStorage.setItem(
                     "employeeId",
                     employee.id
                 );
 
 
-                window.location.href =
-                    "employee.html";
+                window.location.replace("employee.html");
 
 
                 return;
@@ -343,11 +409,11 @@ if (
     loadData().then(function() {
 
         const role =
-            localStorage.getItem("role");
+            sessionStorage.getItem("role");
 
 
         const employeeId =
-            localStorage.getItem(
+            sessionStorage.getItem(
                 "employeeId"
             );
 
@@ -361,8 +427,7 @@ if (
             !employeeId
         ) {
 
-            window.location.href =
-                "index.html";
+            window.location.replace("index.html?expired=true");
 
             return;
         }
@@ -520,7 +585,7 @@ if (
     loadData().then(function() {
 
         const role =
-            localStorage.getItem(
+            sessionStorage.getItem(
                 "role"
             );
 
@@ -528,9 +593,7 @@ if (
         // Only Admin can access
         if (role !== "admin") {
 
-            window.location.href =
-                "index.html";
-
+            window.location.replace("index.html?expired=true");
             return;
         }
 
@@ -1092,7 +1155,7 @@ if (
     loadData().then(function() {
 
         const role =
-            localStorage.getItem(
+            sessionStorage.getItem(
                 "role"
             );
 
@@ -1100,8 +1163,7 @@ if (
         // Only Manager can access
         if (role !== "manager") {
 
-            window.location.href =
-                "index.html";
+           window.location.replace("index.html?expired=true");
 
             return;
         }
@@ -1182,18 +1244,9 @@ function displayManagerEmployees() {
 
 function logout() {
 
-    localStorage.removeItem(
-        "role"
-    );
+     sessionStorage.clear();
 
-
-    localStorage.removeItem(
-        "employeeId"
-    );
-
-
-    window.location.href =
-        "index.html";
+    window.location.replace("index.html");
 
 }
 
